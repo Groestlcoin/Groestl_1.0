@@ -11,6 +11,10 @@ import javax.swing.JButton;
 import aplikacja.actionlistener.ActionListenerBtn_Wykonaj;
 
 public class Gui extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public JTextField textField_Input;
 	public JTextField textField_Output;
 	public Gui() {

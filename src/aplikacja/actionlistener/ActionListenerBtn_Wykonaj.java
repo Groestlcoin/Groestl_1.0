@@ -3,8 +3,6 @@ package aplikacja.actionlistener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.xml.bind.DatatypeConverter;
-
 import aplikacja.gui.Gui;
 import aplikacja.implementation.Pad;
 import aplikacja.implementation.ToByteArray;
@@ -41,9 +39,9 @@ public class ActionListenerBtn_Wykonaj implements ActionListener {
 		pad.printPlainByteArray();
 		pad.append1Bit();
 		pad.printPlainByteArray1();
-		pad.CalculateW();
-		pad.CalculateZ();
-		
+		pad.calculateW();
+		pad.calculateP();
+		pad.add64bitRepresentationOfP();
 	}
 
 

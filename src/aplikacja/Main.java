@@ -9,8 +9,10 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 
+		//test
+		
 		Gui gui = new Gui();
-		gui.show();
+		gui.setVisible(true);
 		
 	}
 
