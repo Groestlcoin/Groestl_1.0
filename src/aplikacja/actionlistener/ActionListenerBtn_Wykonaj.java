@@ -4,8 +4,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import aplikacja.gui.Gui;
+import aplikacja.implementation.CompressionFunction;
 import aplikacja.implementation.Pad;
 import aplikacja.implementation.ToByteArray;
+import aplikacja.implementation.Utility;
 
 public class ActionListenerBtn_Wykonaj implements ActionListener {
 
@@ -60,6 +62,9 @@ public class ActionListenerBtn_Wykonaj implements ActionListener {
 			}
 			System.out.println();
 		}
+		
+		CompressionFunction co = new CompressionFunction(tabOfMessageBlocks[0], Utility.representation256);
+		co.xorHM();
 
 	}
 
