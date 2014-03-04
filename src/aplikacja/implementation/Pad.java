@@ -12,6 +12,12 @@ public class Pad {
 
 	private int p;
 
+	public int getP() {
+		return p;
+	}
+
+	private byte[] paddedArrayOfBytes;
+
 	public Pad(byte[] hexByteArray) {
 		this.hexByteArray = hexByteArray;
 	}
@@ -72,5 +78,10 @@ public class Pad {
 		System.out.println();
 		System.out.println(this.getClass().getCanonicalName()
 				+ "\ttempArrayOfBytes.length: " + tempArrayOfBytes.length);
+		this.paddedArrayOfBytes = tempArrayOfBytes;
+	}
+
+	public byte[] getPaddedArrayOfBytes() {
+		return paddedArrayOfBytes;
 	}
 }

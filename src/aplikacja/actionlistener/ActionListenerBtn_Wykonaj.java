@@ -11,9 +11,9 @@ public class ActionListenerBtn_Wykonaj implements ActionListener {
 
 	private Gui gui;
 	private String inputHEX;
-	private long hex;
 	private byte[] hexByteArray;
 	private Pad pad;
+	private byte[][] tabOfMessageBlocks;
 
 	public ActionListenerBtn_Wykonaj(Gui gui) {
 		this.gui = gui;
@@ -22,19 +22,19 @@ public class ActionListenerBtn_Wykonaj implements ActionListener {
 	@SuppressWarnings("static-access")
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		
+
 		inputHEX = gui.textField_Input.getText();
-//		hex = Long.decode(inputHEX);
-		
+		// hex = Long.decode(inputHEX);
+
 		ToByteArray toByte = new ToByteArray();
-		try{
-			
+		try {
+
 			hexByteArray = toByte.toByteArray(inputHEX);
 
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println("Podaj parzyst¹ liczbê znaków");
 		}
-		
+
 		pad = new Pad(hexByteArray);
 		pad.printPlainByteArray();
 		pad.append1Bit();
@@ -42,7 +42,25 @@ public class ActionListenerBtn_Wykonaj implements ActionListener {
 		pad.calculateW();
 		pad.calculateP();
 		pad.add64bitRepresentationOfP();
-	}
 
+		byte[] paddedArrayOfBlocks = pad.getPaddedArrayOfBytes();
+		int numberOfBlocks = pad.getP();
+
+		this.tabOfMessageBlocks = new byte[numberOfBlocks][64];
+		for (int i = 0, j = 0; i < paddedArrayOfBlocks.length; i++, j++) {
+			if (j == 64) {
+				j = 0;
+			}
+			int blockNumber = i / 64;
+			this.tabOfMessageBlocks[blockNumber][j] = paddedArrayOfBlocks[i];
+		}
+		for (int i = 0; i < tabOfMessageBlocks.length; i++) {
+			for (int j = 0; j < tabOfMessageBlocks[0].length; j++) {
+				System.out.print(tabOfMessageBlocks[i][j] + " ");
+			}
+			System.out.println();
+		}
+
+	}
 
 }
