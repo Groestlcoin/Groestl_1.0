@@ -6,16 +6,16 @@ import java.util.Map;
 
 public class CompressionFunction {
 
-	private byte[][] pRoundConstant;
-	private byte[][] qRoundConstant;
-	private byte[][] him1;
-	private byte[][] mi;
-	private byte[][] xoredHM;
+	private int[][] pRoundConstant;
+	private int[][] qRoundConstant;
+	private int[][] him1;
+	private int[][] mi;
+	private int[][] xoredHM;
 	private Map<String, Integer> indexMap;
 
-	public CompressionFunction(byte[] h, byte[] m) {
-		this.him1 = prepareArray(h);
-		this.mi = prepareArray(m);
+	public CompressionFunction(byte[] representation256, int[] tabOfMessageBlocks) {
+		this.him1 = prepareArray(representation256);
+		this.mi = prepareArray(tabOfMessageBlocks);
 
 		indexMap = new HashMap<String, Integer>();
 		indexMap.put("0", 0);
@@ -35,28 +35,28 @@ public class CompressionFunction {
 		indexMap.put("E", 14);
 		indexMap.put("F", 15);
 
-		pRoundConstant = new byte[8][8];
-		qRoundConstant = new byte[8][8];
+		pRoundConstant = new int[8][8];
+		qRoundConstant = new int[8][8];
 
 		for (int i = 0; i < pRoundConstant[0].length; i++) {
-			pRoundConstant[0][i] = (byte) (0xFF & (i * 16));
+			pRoundConstant[0][i] = (int) (0xFF & (i * 16));
 		}
 
 		for (int i = 0; i < qRoundConstant.length; i++) {
-			Arrays.fill(qRoundConstant[i], (byte) (0xFF & 255));
+			Arrays.fill(qRoundConstant[i], (int) (0xFF & 255));
 		}
 
 		for (int i = 0; i < qRoundConstant[0].length; i++) {
-			qRoundConstant[7][i] = (byte) (0xFF & (255 - (i * 16)));
+			qRoundConstant[7][i] = (int) (0xFF & (255 - (i * 16)));
 		}
 
 		xorHM(this.him1, this.mi);
 		pPermutations(xoredHM);
 	}
 
-	private byte[][] prepareArray(byte[] tab) {
+	private int[][] prepareArray(int[] tab) {
 
-		byte[][] preparedArray = new byte[8][8];
+		int[][] preparedArray = new int[8][8];
 		for (int i = 0; i < tab.length; i++) {
 			preparedArray[i % 8][i / 8] = tab[i];
 		}
@@ -64,7 +64,17 @@ public class CompressionFunction {
 		return preparedArray;
 	}
 
-	public void xorHM(byte[][] him1, byte[][] mi) {
+	private int[][] prepareArray(byte[] tab) {
+
+		int[][] preparedArray = new int[8][8];
+		for (int i = 0; i < tab.length; i++) {
+			preparedArray[i % 8][i / 8] = tab[i];
+		}
+
+		return preparedArray;
+	}
+
+	public void xorHM(int[][] him1, int[][] mi) {
 
 		/*
 		 * System.out.println(); for (int i = 0; i < him1.length; i++) { for
@@ -76,10 +86,10 @@ public class CompressionFunction {
 		 * System.out.println(); }
 		 */
 
-		this.xoredHM = new byte[8][8];
+		this.xoredHM = new int[8][8];
 		for (int i = 0; i < this.xoredHM.length; i++) {
 			for (int j = 0; j < this.xoredHM[0].length; j++) {
-				this.xoredHM[i][j] = (byte) (0xFF & (him1[i][j] ^ mi[i][j]));
+				this.xoredHM[i][j] = (int) (0xFF & (him1[i][j] ^ mi[i][j]));
 			}
 		}
 
@@ -90,94 +100,117 @@ public class CompressionFunction {
 		 */
 	}
 
-	public void pPermutations(byte[][] xoredHM) {
-		byte[][] tempTab = new byte[8][8];
-		System.out.println("1:");
-		for (int k = 0; k < tempTab.length; k++) {
-			System.out.println(Arrays.toString(tempTab[k]));
-		}
+	public void pPermutations(int[][] xoredHM) {
+		int[][] tempTab = new int[8][8];
 		// for (int i = 0; i < 10; i++) {
 		tempTab = addRoundConstantP(xoredHM, 0);
-		System.out.println("2:");
-		for (int k = 0; k < tempTab.length; k++) {
-			System.out.println(Arrays.toString(tempTab[k]));
+		for (int k = 0; k < 8; k++) {
+			for (int l = 0; l < 8; l++) {
+				System.out.print(Integer.toHexString(tempTab[k][l] & 0xFF) + " ");
+			}
+			System.out.println();
 		}
+		System.out.println();
 		tempTab = subBytes(tempTab);
+		System.out.println();
+		for (int k = 0; k < 8; k++) {
+			for (int l = 0; l < 8; l++) {
+				System.out.print(Integer.toHexString(tempTab[k][l] & 0xFF) + " ");
+			}
+			System.out.println();
+		}
+		shiftBytesP();
+		mixBytes();
+
 		// }
 	}
 
-	public void qPermutations(byte[][] m) {
-		byte[][] tempTab = new byte[8][8];
+	public void qPermutations(int[][] m) {
+		int[][] tempTab = new int[8][8];
 		for (int i = 0; i < 10; i++) {
 			tempTab = addRoundConstantQ(m, i);
 
 		}
 	}
 
-	public byte[][] xorAllOutput(byte[][] h, byte[][] pOutput, byte[][] qOutput) {
+	public int[][] xorAllOutput(int[][] h, int[][] pOutput, int[][] qOutput) {
 
-		byte[][] output = new byte[8][8];
+		int[][] output = new int[8][8];
 		for (int i = 0; i < h.length; i++) {
 			for (int j = 0; j < h[0].length; j++) {
-				output[i][j] = (byte) (h[i][j] ^ pOutput[i][j] ^ qOutput[i][j]);
+				output[i][j] = (int) (h[i][j] ^ pOutput[i][j] ^ qOutput[i][j]);
 			}
 		}
 		return output;
 	}
 
-	public byte[][] subBytes(byte[][] tab) {
+	public int[][] subBytes(int[][] tab) {
 
 		// System.out.println(Integer.toHexString(Utility.sBox[5][3] & 0xFF));
 
 		for (int i = 0; i < tab.length; i++) {
 			for (int j = 0; j < tab[0].length; j++) {
-				String sTemp = Integer.toHexString(tab[i][j] & 0xFF);
-				System.out.println(sTemp);
-			}
-		}
+				String sTemp = String.format("%02X", (tab[i][j] & 0xFF)).toUpperCase();
+				String fPart = sTemp.substring(0, 1);
+				String sPart = sTemp.substring(1);
 
-		return null;
-	}
+				int indexI = indexMap.get(fPart);
+				int indexJ = indexMap.get(sPart);
 
-	public byte[][] mixBytes() {
-		return null;
-	}
-
-	public byte[][] addRoundConstantP(byte[][] tab, int r) {
-
-		for (int j = 0; j < tab[0].length; j++) {
-			tab[0][j] = (byte)(0xFF &  (this.pRoundConstant[0][j] ^ r));
-		}
-
-		for (int i = 0; i < tab.length; i++) {
-			for (int j = 0; j < tab[0].length; j++) {
-				tab[i][j] = (byte)(0xFF &  (tab[i][j] ^ pRoundConstant[i][j]));
+				tab[i][j] = Utility.sBox[indexI][indexJ];
 			}
 		}
 
 		return tab;
 	}
 
-	public byte[][] addRoundConstantQ(byte[][] tab, int r) {
+	public int[][] mixBytes() {
+		return null;
+	}
 
-		for (int j = 0; j < tab[0].length; j++) {
-			tab[7][j] = (byte) (this.qRoundConstant[7][j] ^ r);
+	public int[][] addRoundConstantP(int[][] tab, int r) {
+
+		int[][] tempPConstTab = pRoundConstant.clone();
+
+		for (int j = 0; j < tempPConstTab[0].length; j++) {
+			int con = this.pRoundConstant[0][j];
+			int xor = con ^ r;
+			tempPConstTab[0][j] = xor;
 		}
 
 		for (int i = 0; i < tab.length; i++) {
 			for (int j = 0; j < tab[0].length; j++) {
-				tab[i][j] = (byte) (tab[i][j] ^ qRoundConstant[i][j]);
+				tab[i][j] = (0xFF & (tempPConstTab[i][j] ^ tab[i][j]));
 			}
 		}
 
 		return tab;
 	}
 
-	public byte[][] shiftBytesP() {
+	public int[][] addRoundConstantQ(int[][] tab, int r) {
+
+		int[][] tempPConstTab = qRoundConstant.clone();
+
+		for (int j = 0; j < tempPConstTab[0].length; j++) {
+			int con = this.qRoundConstant[0][j];
+			int xor = con ^ r;
+			tempPConstTab[0][j] = xor;
+		}
+
+		for (int i = 0; i < tab.length; i++) {
+			for (int j = 0; j < tab[0].length; j++) {
+				tab[i][j] = (0xFF & (tempPConstTab[i][j] ^ tab[i][j]));
+			}
+		}
+
+		return tab;
+	}
+
+	public int[][] shiftBytesP() {
 		return null;
 	}
 
-	public byte[][] shiftBytesQ() {
+	public int[][] shiftBytesQ() {
 		return null;
 	}
 
