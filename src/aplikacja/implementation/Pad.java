@@ -27,8 +27,7 @@ public class Pad {
 			System.out.print(hexByteArray[i] + " ");
 		}
 		System.out.println();
-		System.out.println(this.getClass().getCanonicalName()
-				+ "\thexByteArray.length: " + hexByteArray.length);
+		System.out.println(this.getClass().getCanonicalName() + "\thexByteArray.length: " + hexByteArray.length);
 	}
 
 	public void append1Bit() {
@@ -45,9 +44,7 @@ public class Pad {
 			System.out.print(hexByteArrayAppended[i] + " ");
 		}
 		System.out.println();
-		System.out.println(this.getClass().getCanonicalName()
-				+ "\thexByteArrayAppended.length: "
-				+ hexByteArrayAppended.length);
+		System.out.println(this.getClass().getCanonicalName() + "\thexByteArrayAppended.length: " + hexByteArrayAppended.length);
 	}
 
 	public void calculateW() {
@@ -76,8 +73,7 @@ public class Pad {
 			System.out.print(tempArrayOfBytes[i] + " ");
 		}
 		System.out.println();
-		System.out.println(this.getClass().getCanonicalName()
-				+ "\ttempArrayOfBytes.length: " + tempArrayOfBytes.length);
+		System.out.println(this.getClass().getCanonicalName() + "\ttempArrayOfBytes.length: " + tempArrayOfBytes.length);
 		this.paddedArrayOfBytes = tempArrayOfBytes;
 	}
 

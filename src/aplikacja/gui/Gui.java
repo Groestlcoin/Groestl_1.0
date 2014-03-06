@@ -45,7 +45,7 @@ public class Gui extends JFrame {
 		lblOu.setBounds(10, 45, 25, 14);
 		panel.add(lblOu);
 		
-		ActionListenerBtn_Wykonaj actionListenerBtn_Wykonaj = new ActionListenerBtn_Wykonaj(this);
+		ActionListenerBtn_Wykonaj actionListenerBtn_Wykonaj = new ActionListenerBtn_Wykonaj(textField_Input);
 		JButton btn_Wykonaj = new JButton("Wykonaj");
 		btn_Wykonaj.setBounds(306, 10, 75, 52);
 		btn_Wykonaj.addActionListener(actionListenerBtn_Wykonaj);
