@@ -104,13 +104,14 @@ public class CompressionFunction {
 		int[][] tempTab = new int[8][8];
 		// for (int i = 0; i < 10; i++) {
 		tempTab = addRoundConstantP(xoredHM, 0);
+		System.out.println();
 		for (int k = 0; k < 8; k++) {
 			for (int l = 0; l < 8; l++) {
 				System.out.print(Integer.toHexString(tempTab[k][l] & 0xFF) + " ");
 			}
 			System.out.println();
 		}
-		System.out.println();
+
 		tempTab = subBytes(tempTab);
 		System.out.println();
 		for (int k = 0; k < 8; k++) {
@@ -119,8 +120,17 @@ public class CompressionFunction {
 			}
 			System.out.println();
 		}
-		shiftBytesP();
-		mixBytes();
+		tempTab = shiftBytesP(tempTab);
+		System.out.println();
+		for (int k = 0; k < 8; k++) {
+//			System.out.println(Arrays.toString(tempTab[k]));
+			for (int l = 0; l < 8; l++) {
+				System.out.print((tempTab[k][l] & 0xFF) + " ");
+//				System.out.print(Integer.toHexString(tempTab[k][l] & 0xFF) + " ");
+			}
+			System.out.println();
+		}
+		tempTab = mixBytes(tempTab);
 
 		// }
 	}
@@ -164,7 +174,8 @@ public class CompressionFunction {
 		return tab;
 	}
 
-	public int[][] mixBytes() {
+	public int[][] mixBytes(int[][] tempTab) {
+
 		return null;
 	}
 
@@ -206,12 +217,39 @@ public class CompressionFunction {
 		return tab;
 	}
 
-	public int[][] shiftBytesP() {
-		return null;
+	public int[][] shiftBytesP(int[][] tab) {
+
+		int[] c = { 0, 1, 2, 3, 4, 5, 6, 7 };
+		int[][] tempTab = new int[8][8];
+		for (int i = 0; i < tempTab.length; i++) {
+			for (int j = 0; j < tempTab[0].length; j++) {
+				int r = j - c[i];
+				if (r < 0) {
+					tempTab[i][8 + r] = tab[i][j];
+				} else {
+					tempTab[i][r] = tab[i][j];
+				}
+			}
+		}
+
+		return tempTab;
 	}
 
-	public int[][] shiftBytesQ() {
-		return null;
+	public int[][] shiftBytesQ(int[][] tab) {
+		int[] c = { 1, 3, 5, 7, 0, 2, 4, 6 };
+		int[][] tempTab = new int[8][8];
+		for (int i = 0; i < tempTab.length; i++) {
+			for (int j = 0; j < tempTab[0].length; j++) {
+				int r = j - c[i];
+				if (r < 0) {
+					tempTab[i][8 + r] = tab[i][j];
+				} else {
+					tempTab[i][r] = tab[i][j];
+				}
+			}
+		}
+
+		return tempTab;
 	}
 
 }

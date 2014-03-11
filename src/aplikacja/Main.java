@@ -11,6 +11,8 @@ public class Main {
 
 		//test
 		
+		System.out.println(((2*239)^(2*99)^(3*99)^(4*99)^(5*99)^(3*99)^(5*99)^(7*124))%283);
+		
 		Gui gui = new Gui();
 		gui.setVisible(true);
 		

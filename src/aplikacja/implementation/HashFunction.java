@@ -15,9 +15,9 @@ public class HashFunction {
 		}
 
 		pad = new Pad(hexbyteArray);
-		pad.printPlainByteArray();
+//		pad.printPlainByteArray();
 		pad.append1Bit();
-		pad.printPlainByteArray1();
+//		pad.printPlainByteArray1();
 		pad.calculateW();
 		pad.calculateP();
 		pad.add64bitRepresentationOfP();
@@ -33,12 +33,6 @@ public class HashFunction {
 			int blockNumber = i / 64;
 			this.tabOfMessageBlocks[blockNumber][j] = paddedArrayOfBlocks[i];
 		}
-		/*
-		 * for (int i = 0; i < tabOfMessageBlocks.length; i++) { for (int j = 0;
-		 * j < tabOfMessageBlocks[0].length; j++) {
-		 * System.out.print(tabOfMessageBlocks[i][j] + " "); }
-		 * System.out.println(); }
-		 */
 
 		new CompressionFunction(Utility.representation256, tabOfMessageBlocks[0]);
 
