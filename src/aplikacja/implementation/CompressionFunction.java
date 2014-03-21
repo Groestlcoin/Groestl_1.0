@@ -12,6 +12,8 @@ public class CompressionFunction {
 	private int[][] mi;
 	private int[][] xoredHM;
 	private Map<String, Integer> indexMap;
+	private int[][] tempTabP;
+	private int[][] tempTabQ;
 
 	public CompressionFunction(byte[] representation256, int[] tabOfMessageBlocks) {
 		this.him1 = prepareArray(representation256);
@@ -52,6 +54,7 @@ public class CompressionFunction {
 
 		xorHM(this.him1, this.mi);
 		pPermutations(xoredHM);
+		qPermutations(mi);
 	}
 
 	private int[][] prepareArray(int[] tab) {
@@ -102,45 +105,52 @@ public class CompressionFunction {
 
 	public void pPermutations(int[][] xoredHM) {
 		int[][] tempTab = new int[8][8];
-		// for (int i = 0; i < 10; i++) {
-		tempTab = addRoundConstantP(xoredHM, 0);
-		System.out.println();
-		for (int k = 0; k < 8; k++) {
-			for (int l = 0; l < 8; l++) {
-				System.out.print(Integer.toHexString(tempTab[k][l] & 0xFF) + " ");
-			}
-			System.out.println();
+		for (int i = 0; i < 10; i++) {
+			tempTab = addRoundConstantP(xoredHM, 0);
+			// System.out.println();
+			// for (int k = 0; k < 8; k++) {
+			// for (int l = 0; l < 8; l++) {
+			// System.out.print(Integer.toHexString(tempTab[k][l] & 0xFF) +
+			// " ");
+			// }
+			// System.out.println();
+			// }
+
+			tempTab = subBytes(tempTab);
+			// System.out.println();
+			// for (int k = 0; k < 8; k++) {
+			// for (int l = 0; l < 8; l++) {
+			// System.out.print(Integer.toHexString(tempTab[k][l] & 0xFF) +
+			// " ");
+			// }
+			// System.out.println();
+			// }
+			tempTab = shiftBytesP(tempTab);
+			// System.out.println();
+			// for (int k = 0; k < 8; k++) {
+			// System.out.println(Arrays.toString(tempTab[k]));
+			// for (int l = 0; l < 8; l++) {
+			// System.out.print((tempTab[k][l] & 0xFF) + " ");
+			// System.out.print(Integer.toHexString(tempTab[k][l] & 0xFF) +
+			// " ");
+			// }
+			// System.out.println();
+			// }
+			tempTab = mixBytes(tempTab);
 		}
 
-		tempTab = subBytes(tempTab);
-		System.out.println();
-		for (int k = 0; k < 8; k++) {
-			for (int l = 0; l < 8; l++) {
-				System.out.print(Integer.toHexString(tempTab[k][l] & 0xFF) + " ");
-			}
-			System.out.println();
-		}
-		tempTab = shiftBytesP(tempTab);
-		System.out.println();
-		for (int k = 0; k < 8; k++) {
-//			System.out.println(Arrays.toString(tempTab[k]));
-			for (int l = 0; l < 8; l++) {
-				System.out.print((tempTab[k][l] & 0xFF) + " ");
-//				System.out.print(Integer.toHexString(tempTab[k][l] & 0xFF) + " ");
-			}
-			System.out.println();
-		}
-		tempTab = mixBytes(tempTab);
-
-		// }
+		this.tempTabP = tempTab.clone();
 	}
 
 	public void qPermutations(int[][] m) {
 		int[][] tempTab = new int[8][8];
 		for (int i = 0; i < 10; i++) {
 			tempTab = addRoundConstantQ(m, i);
-
+			tempTab = subBytes(tempTab);
+			tempTab = shiftBytesQ(tempTab);
+			tempTab = mixBytes(tempTab);
 		}
+		this.tempTabQ = tempTab.clone();
 	}
 
 	public int[][] xorAllOutput(int[][] h, int[][] pOutput, int[][] qOutput) {
@@ -176,7 +186,7 @@ public class CompressionFunction {
 
 	public int[][] mixBytes(int[][] tempTab) {
 
-		return null;
+		return tempTab;
 	}
 
 	public int[][] addRoundConstantP(int[][] tab, int r) {
@@ -250,6 +260,23 @@ public class CompressionFunction {
 		}
 
 		return tempTab;
+	}
+
+	public byte[] getBlockState() {
+		int[][] xoredAll = new int[8][8];
+		for (int i = 0; i < xoredAll.length; i++) {
+			for (int j = 0; j < xoredAll[0].length; j++) {
+				xoredAll[i][j] = (int) (0xFF & (him1[i][j] ^ tempTabP[i][j] ^ tempTabQ[i][j]));
+			}
+		}
+		byte[] endState = new byte[64];
+		for (int i = 0; i < xoredAll.length; i++) {
+			for (int j = 0; j < xoredAll[0].length; j++) {
+				endState[j + i] = (byte) (0xFF & (him1[i][j] ^ tempTabP[i][j] ^ tempTabQ[i][j]));
+			}
+		}
+
+		return endState;
 	}
 
 }

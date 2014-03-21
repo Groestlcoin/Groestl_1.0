@@ -1,13 +1,16 @@
 package aplikacja.implementation;
 
+import java.util.Arrays;
+
 public class HashFunction {
 
 	private byte[] hexbyteArray;
 	private Pad pad;
 	private int[][] tabOfMessageBlocks;
+	private CompressionFunction comp;
 
 	public void calculateHash(String inputHEX) {
-		System.out.println(this.getClass().getCanonicalName()+ ":\t" + inputHEX);
+		System.out.println(this.getClass().getCanonicalName() + ":\t" + inputHEX);
 		try {
 			hexbyteArray = ToByteArray.toByteArray(inputHEX);
 		} catch (Exception e) {
@@ -15,9 +18,9 @@ public class HashFunction {
 		}
 
 		pad = new Pad(hexbyteArray);
-//		pad.printPlainByteArray();
+		// pad.printPlainByteArray();
 		pad.append1Bit();
-//		pad.printPlainByteArray1();
+		// pad.printPlainByteArray1();
 		pad.calculateW();
 		pad.calculateP();
 		pad.add64bitRepresentationOfP();
@@ -34,8 +37,26 @@ public class HashFunction {
 			this.tabOfMessageBlocks[blockNumber][j] = paddedArrayOfBlocks[i];
 		}
 
-		new CompressionFunction(Utility.representation256, tabOfMessageBlocks[0]);
+		comp = new CompressionFunction(Utility.representation256, tabOfMessageBlocks[0]);
 
+	}
+
+	public String getHash() {
+
+		// String hash = new String(comp.getBlockState());
+		String hash = toByteString(comp.getBlockState());
+
+		return hash;
+	}
+
+	private String toByteString(byte[] blockState) {
+
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < blockState.length; i++) {
+			sb.append(blockState[i] & 0xFF);
+		}
+
+		return sb.toString();
 	}
 
 }
